@@ -177,11 +177,7 @@ if __name__ == "__main__":
     training_enabled = True
     gui = False
  
-<<<<<<< HEAD
-  
-=======
-   
->>>>>>> parent of 1414c80... Changes required to upload
+    sys.path.append(os.path.join('c:', os.sep, 'Users','Desktop','Work','Sumo','tools')) 
     # ----------------------
 
     # attributes of the agent
