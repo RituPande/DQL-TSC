@@ -18,17 +18,18 @@ from keras.models import load_model
 #import traci.constants as tc
 class TLAgent:
     
-    def __init__( self, env, traffic_gen, max_steps):
+    def __init__( self, env, traffic_gen, max_steps, total_episodes):
             
         self.env = env
         self.traffic_gen = traffic_gen
-        self.total_episodes = 100
+        self.total_episodes = total_episodes
         self.discount = 0.75
         self.epsilon = 0.9
         self.replay_buffer = deque(maxlen=50000)
         self.batch_size = 100
         self.num_states = 80
         self.num_actions = 4
+        self.num_experiments = 5
         # phases are in same order as specified in the .net.xml file
         self.PHASE_NS_GREEN = 0  # action 0 code 00
         self.PHASE_NS_YELLOW = 1
@@ -48,9 +49,10 @@ class TLAgent:
         self._load_models()
         self.max_steps = max_steps
         
-        self.reward_store = []
-
-        self.avg_intersection_queue_store = []
+        self.reward_store = np.zeros((self.total_episodes, ))
+        self.intersection_queue_store = np.zeros((self.total_episodes,) )
+        
+       
       
     def _load_models( self ) :
         
@@ -120,28 +122,29 @@ class TLAgent:
 
             
     def train( self ):
-        curr_state = self.env.start() 
+        
+        curr_state = self.env.start()
+   
         for e in range(self.total_episodes):
             self.traffic_gen.generate_routefile(7)
-             
             curr_state = self._preprocess_input( curr_state)
             old_action =  None
             done = False # whether  the episode has ended or not
             sum_intersection_queue = 0
             sum_neg_rewards = 0
             while not done:
-                
+                    
                 action = self._agent_policy( e,curr_state)
                 yellow_reward = 0
-                
+                    
                 if old_action!= None and old_action != action:
                     self._set_yellow_phase(old_action)
                     yellow_reward, _ , _ = self.env.step(self.yellow_duration)
-               
+                   
                 self._set_green_phase(action)
                 reward, next_state, done = self.env.step(self.green_duration)
                 reward += yellow_reward
-                #print("reward-main={}".format(reward))
+                    #print("reward-main={}".format(reward))
                 next_state = self._preprocess_input( next_state )
                 self._add_to_replay_buffer( curr_state, action, reward, next_state, done )
                 self._replay()
@@ -150,25 +153,22 @@ class TLAgent:
                 sum_intersection_queue += self.env.get_intersection_q_per_step()
                 if reward < 0:
                     sum_neg_rewards += reward
-                #print("sum_rewards={}".format(sum_rewards))
-                
-            #print("cumulative sum_rewards={}".format(sum_neg_rewards))
-            self._save_stats(sum_intersection_queue,sum_neg_rewards)
+                    
+          
+            self._save_stats(e, sum_intersection_queue,sum_neg_rewards)
             self.QModel.save('qmodel_{}.hd5'.format(e))
             if e != 0:
                 os.remove('qmodel_{}.hd5'.format(e-1))
-            print('Epoch {} complete'.format(e))
             curr_state = self.env.reset()   # reset the environment before every episode
-        
+            print('Epoch {} complete'.format(e))
         
     def execute( self):
         while traci.simulation.getMinExpectedNumber() > 0:
             traci.simulationStep()
             
-    def _save_stats(self, sum_intersection_queue_per_episode, sum_rewards_per_episode):
-        self.reward_store.append(sum_rewards_per_episode)
-        self.avg_intersection_queue_store.append(sum_intersection_queue_per_episode)  # average number of queued cars per step, in this episode
-
+    def _save_stats(self, episode, sum_intersection_queue_per_episode, sum_rewards_per_episode):
+        self.reward_store[episode] = sum_rewards_per_episode
+        self.intersection_queue_store[episode] = sum_intersection_queue_per_episode  
   
         
 if __name__ == "__main__":
@@ -177,7 +177,11 @@ if __name__ == "__main__":
     training_enabled = True
     gui = False
  
+<<<<<<< HEAD
+  
+=======
    
+>>>>>>> parent of 1414c80... Changes required to upload
     # ----------------------
 
     # attributes of the agent
@@ -190,19 +194,31 @@ if __name__ == "__main__":
 
     # initializations
     max_steps = 5400  # seconds = 1 h 30 min each episode
+    total_episodes = 100
+    num_experiments = 5
 
     traffic_gen = TrafficGenerator(max_steps)
    
-    env = SumoEnv(sumoBinary,max_steps )
-    tl = TLAgent( env, traffic_gen, max_steps )
-    
+        
     if training_enabled:
-        tl.train()
-        utils.plot_rewards(tl.reward_store)
-        utils.plot_intersection_queue_size( tl.avg_intersection_queue_store)
-        print(tl.reward_store)
-        print(tl.avg_intersection_queue_store)
+       
+
+        reward_store = np.zeros((num_experiments,total_episodes))
+        intersection_queue_store = np.zeros((num_experiments,total_episodes))
+        for experiment in range(num_experiments):
+            env = SumoEnv(sumoBinary,max_steps )
+            tl = TLAgent( env, traffic_gen, max_steps, total_episodes )
+            tl.train()
+            reward_store[experiment,:] = tl.reward_store
+            intersection_queue_store[experiment,:] =  tl.intersection_queue_store
+            del env
+            del tl
+            print('Experiment {} complete.........'.format(experiment))
+        utils.plot_rewards(reward_store)
+        utils.plot_intersection_queue_size( intersection_queue_store)
+        print(reward_store)
+        print(intersection_queue_store)
         
         
-    del env
+    
     
