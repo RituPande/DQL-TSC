@@ -2,16 +2,16 @@
 """
 Created on Sun Sep 29 21:20:28 2019
 
-@author: XZ01M2
+@author: Ritu Pande
 """
 import traci
 import numpy as np
 class SumoEnv:
     
     def __init__( self, sumoBinary, max_steps ):
-         self.sumoCmd = [sumoBinary, "-c", "intersection/ts.4L.sumocfg", "--no-step-log", "true", "--waiting-time-memory", str(max_steps)]
+         self.sumoCmd = [sumoBinary, "-c", "intersection/ts.4L.sumocfg", "--no-step-log", "true", "--waiting-time-memory", str(max_steps), "--log","logfile.txt"]
          self.SUMO_INT_LANE_LENGTH = 500
-         self.num_states = 80 # 0-79 see _encode_state function for details
+         self.num_states = 80 # 0-79 see _encode_env_state function for details
          self.max_steps = max_steps
          self._init()
          

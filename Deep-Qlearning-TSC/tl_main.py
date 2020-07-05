@@ -3,7 +3,6 @@
 import os
 import sys
 from  Model import Model
-import glob
 import traci
 from SumoEnv import SumoEnv
 import numpy as np
@@ -12,13 +11,14 @@ from TrafficGenerator import TrafficGenerator
 from collections import deque
 import utils 
 from keras.models import load_model
+import copy
 
 
 
 #import traci.constants as tc
 class TLAgent:
     
-    def __init__( self, env, traffic_gen, max_steps, total_episodes):
+    def __init__( self, env, traffic_gen, max_steps, num_experients, total_episodes, qmodel_filename, stats , init_epoch, learn = True ):
             
         self.env = env
         self.traffic_gen = traffic_gen
@@ -29,7 +29,7 @@ class TLAgent:
         self.batch_size = 100
         self.num_states = 80
         self.num_actions = 4
-        self.num_experiments = 5
+        self.num_experiments = num_experients
         # phases are in same order as specified in the .net.xml file
         self.PHASE_NS_GREEN = 0  # action 0 code 00
         self.PHASE_NS_YELLOW = 1
@@ -42,33 +42,36 @@ class TLAgent:
         
         self.green_duration = 10
         self.yellow_duration = 4
-        
+        self.stats = stats
         self.init_epoch = 0
         self.QModel = None
+        self.tau = 20
         self.TargetQModel = None
-        self._load_models()
+        self.qmodel_filename = qmodel_filename
+        self.stats_filename = stats_filename
+        self.init_epoch = init_epoch
+        self._load_models(learn)
         self.max_steps = max_steps
         
-        self.reward_store = np.zeros((self.total_episodes, ))
-        self.intersection_queue_store = np.zeros((self.total_episodes,) )
         
-       
       
-    def _load_models( self ) :
+    def _load_models( self , learn = True) :
         
         self.QModel = Model(self.num_states, self.num_actions )
         self.TargetQModel = Model(self.num_states, self.num_actions)
-        qmodel_file_name = glob.glob('./qmodel*')
-       
-        if  qmodel_file_name:
-            qmodel_fd = open(qmodel_file_name[0], 'r')
+        
+        if  self.init_epoch !=0 or not learn:
+            print('model read from file')
+            qmodel_fd = open(self.qmodel_filename, 'r')
                    
             if (qmodel_fd is not None):
-                self.init_epoch = utils._get_init_epoch(qmodel_fd.name)
+                
                 self.QModel = load_model(qmodel_fd.name)
                 self.TargetQModel = load_model(qmodel_fd.name)
             
-        return   self.QModel, self.TargetQModel                     
+        return   self.QModel, self.TargetQModel    
+
+             
             
     def _preprocess_input( self, state ):
         state = np.reshape(state, [1, self.num_states])
@@ -94,11 +97,15 @@ class TLAgent:
         self.QModel.fit(np.array(x_batch), np.array(y_batch), batch_size=len(x_batch), verbose=0)
         
         
-    def _agent_policy( self, episode, state ):
-        epsilon = 1 - episode/self.total_episodes
-        choice  = np.random.random()
-        if choice <= epsilon:
-            action = np.random.choice(range(self.num_actions))
+    def _agent_policy( self, episode, state, learn = True ):
+        
+        if learn:
+            epsilon = 1 - episode/self.total_episodes
+            choice  = np.random.random()
+            if choice <= epsilon:
+                action = np.random.choice(range(self.num_actions))
+            else:
+                action =  np.argmax(self.QModel.predict(state))
         else:
             action =  np.argmax(self.QModel.predict(state))
                 
@@ -120,13 +127,88 @@ class TLAgent:
         elif action == 3:
             traci.trafficlight.setPhase("TL", self.PHASE_EWL_GREEN)
 
-            
-    def train( self ):
+    
+    def evaluate_model( self, experiment ):
         
+        self.traffic_gen.generate_routefile(0)
+        curr_state = self.env.start()
+        
+        for e in range( self.init_epoch, self.total_episodes):
+            
+            done = False
+            sum_intersection_queue = 0
+            sum_neg_rewards = 0
+            old_action = None
+            while not done:
+                curr_state = self._preprocess_input( curr_state )
+                action = self._agent_policy( e, curr_state, learn = False)
+                yellow_reward = 0
+                    
+                if old_action!= None and old_action != action:
+                    self._set_yellow_phase(old_action)
+                    yellow_reward, _ , _ = self.env.step(self.yellow_duration)
+                   
+                self._set_green_phase(action)
+                reward, next_state, done = self.env.step(self.green_duration)
+                reward += yellow_reward
+                next_state = self._preprocess_input( next_state )
+                curr_state = next_state
+                old_action = action
+                sum_intersection_queue += self.env.get_intersection_q_per_step()
+                if reward < 0:
+                    sum_neg_rewards += reward
+
+            self._save_stats(experiment, e, sum_intersection_queue,sum_neg_rewards)
+            print('sum_neg_rewards={}'.format(sum_neg_rewards))
+            print('sum_intersection_queue={}'.format(sum_intersection_queue))
+            print('Epoch {} complete'.format(e))
+            if e != 0:
+                os.remove('stats_{}_{}.npy'.format(experiment, e-1))
+            elif experiment !=0:
+                os.remove('stats_{}_{}.npy'.format(experiment-1, self.total_episodes-1))
+            self.traffic_gen.generate_routefile(e+1)
+            curr_state =self.env.reset()
+
+        
+    def execute_classical( self, experiment ):
+        self.traffic_gen.generate_routefile(-1)
+        self.env.start()
+         
+        for e in range( self.init_epoch, self.total_episodes):
+           
+            done = False
+            sum_intersection_queue = 0
+            sum_neg_rewards = 0
+            while not done:
+                for action in range(self.num_actions):
+                    self._set_green_phase(action)
+                    reward, _, done = self.env.step(self.green_duration)
+                    self._set_yellow_phase(action)
+                    yellow_reward, _, _ = self.env.step(self.yellow_duration)
+                    reward += yellow_reward
+                    if reward < 0:
+                        sum_neg_rewards += reward
+                    sum_intersection_queue += self.env.get_intersection_q_per_step()
+                    
+            self._save_stats(experiment, e, sum_intersection_queue,sum_neg_rewards)
+            print('sum_neg_rewards={}'.format(sum_neg_rewards))
+            print('sum_intersection_queue={}'.format(sum_intersection_queue))
+            print('Epoch {} complete'.format(e))
+            if e != 0:
+                os.remove('stats_{}_{}.npy'.format(experiment, e-1))
+            elif experiment !=0:
+                os.remove('stats_{}_{}.npy'.format(experiment-1, self.total_episodes-1))
+            self.traffic_gen.generate_routefile(-1)
+            self.env.reset()
+            
+        
+    def train( self, experiment ):
+        
+        self.traffic_gen.generate_routefile(0)
         curr_state = self.env.start()
    
-        for e in range(self.total_episodes):
-            self.traffic_gen.generate_routefile(7)
+        for e in range( self.init_epoch, self.total_episodes):
+            
             curr_state = self._preprocess_input( curr_state)
             old_action =  None
             done = False # whether  the episode has ended or not
@@ -144,9 +226,11 @@ class TLAgent:
                 self._set_green_phase(action)
                 reward, next_state, done = self.env.step(self.green_duration)
                 reward += yellow_reward
-                    #print("reward-main={}".format(reward))
                 next_state = self._preprocess_input( next_state )
                 self._add_to_replay_buffer( curr_state, action, reward, next_state, done )
+                
+                if e > 0 and e % self.tau == 0:
+                    self._sync_target_model()
                 self._replay()
                 curr_state = next_state
                 old_action = action
@@ -155,10 +239,15 @@ class TLAgent:
                     sum_neg_rewards += reward
                     
           
-            self._save_stats(e, sum_intersection_queue,sum_neg_rewards)
-            self.QModel.save('qmodel_{}.hd5'.format(e))
+            self._save_stats(experiment, e, sum_intersection_queue,sum_neg_rewards)
+            self.QModel.save('qmodel_{}_{}.hd5'.format(experiment, e))
             if e != 0:
-                os.remove('qmodel_{}.hd5'.format(e-1))
+                os.remove('qmodel_{}_{}.hd5'.format(experiment, e-1))
+                os.remove('stats_{}_{}.npy'.format(experiment, e-1))
+            elif experiment !=0:
+                os.remove('qmodel_{}_{}.hd5'.format(experiment-1, self.total_episodes-1))
+                os.remove('stats_{}_{}.npy'.format(experiment-1, self.total_episodes-1))
+            self.traffic_gen.generate_routefile(e+1)
             curr_state = self.env.reset()   # reset the environment before every episode
             print('Epoch {} complete'.format(e))
         
@@ -166,10 +255,14 @@ class TLAgent:
         while traci.simulation.getMinExpectedNumber() > 0:
             traci.simulationStep()
             
-    def _save_stats(self, episode, sum_intersection_queue_per_episode, sum_rewards_per_episode):
-        self.reward_store[episode] = sum_rewards_per_episode
-        self.intersection_queue_store[episode] = sum_intersection_queue_per_episode  
-  
+    def _save_stats(self, experiment, episode, sum_intersection_queue_per_episode, sum_rewards_per_episode):
+        self.stats['rewards'][experiment, episode] = sum_rewards_per_episode
+        self.stats['intersection_queue'][experiment, episode] = sum_intersection_queue_per_episode  
+        np.save('stats_{}_{}.npy'.format(experiment, episode), self.stats)
+        
+      
+      
+
         
 if __name__ == "__main__":
 
@@ -191,29 +284,30 @@ if __name__ == "__main__":
     # initializations
     max_steps = 5400  # seconds = 1 h 30 min each episode
     total_episodes = 100
-    num_experiments = 5
-
+    num_experiments = 1
+    learn = False
     traffic_gen = TrafficGenerator(max_steps)
-   
+    qmodel_filename, stats_filename = utils.get_file_names()
+    init_experiment, init_epoch = utils.get_init_epoch( qmodel_filename, total_episodes, learn)
+    print('init_experiment={} init_epoch={}'.format(init_experiment,init_epoch ))
+    stats = utils.get_stats(stats_filename, num_experiments, total_episodes, learn)
+    
+    
+    for experiment in range(init_experiment, num_experiments):
+        env = SumoEnv(sumoBinary,max_steps )
+        tl = TLAgent( env, traffic_gen, max_steps, num_experiments, total_episodes, qmodel_filename, stats,init_epoch, learn )
+        init_epoch = 0 # reset init_epoch after first experiment
+        tl.execute_classical( experiment)
+        stats = copy.deepcopy(tl.stats)
+        print(stats['rewards'][0:experiment+1, :])
+        print(stats['intersection_queue'][0:experiment+1, :])
+        utils.plot_rewards(stats['rewards'][0:experiment+1, :])
+        utils.plot_intersection_queue_size( stats['intersection_queue'][0:experiment+1, :])
+        del env
+        del tl
+        print('Experiment {} complete.........'.format(experiment))
         
-    if training_enabled:
-       
-
-        reward_store = np.zeros((num_experiments,total_episodes))
-        intersection_queue_store = np.zeros((num_experiments,total_episodes))
-        for experiment in range(num_experiments):
-            env = SumoEnv(sumoBinary,max_steps )
-            tl = TLAgent( env, traffic_gen, max_steps, total_episodes )
-            tl.train()
-            reward_store[experiment,:] = tl.reward_store
-            intersection_queue_store[experiment,:] =  tl.intersection_queue_store
-            del env
-            del tl
-            print('Experiment {} complete.........'.format(experiment))
-        utils.plot_rewards(reward_store)
-        utils.plot_intersection_queue_size( intersection_queue_store)
-        print(reward_store)
-        print(intersection_queue_store)
+        
         
         
     

@@ -9,7 +9,9 @@ class TrafficGenerator:
 
     # generation of routes of cars
     def generate_routefile(self, seed):
-        np.random.seed(seed)  # make tests reproducible
+        
+        if seed >=0 :
+            np.random.seed(seed)  # make tests reproducible
 
         # the generation of cars is distributed according to a weibull distribution
         timings = np.random.weibull(2, self._n_cars_generated)

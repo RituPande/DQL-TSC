@@ -7,13 +7,51 @@ Created on Sun Mar 22 21:55:20 2020
 
 import matplotlib.pyplot as plt
 import numpy as np 
+import glob
 
-def _get_init_epoch( filename ):
+def get_file_names():
+     qmodel_file_name = glob.glob('./qmodel*')
+     stats_file_name = glob.glob('./stats*')
+     
+     if not qmodel_file_name:
+         qmodel_file_name = ''
+     else:
+         qmodel_file_name = qmodel_file_name[0]
     
-    index = filename.find('_')
-    str_epoch = filename[index+1]
-    return int(str_epoch)
+     if not stats_file_name:
+         stats_file_name = ''
+     else:
+         stats_file_name = stats_file_name[0]
 
+     return qmodel_file_name, stats_file_name
+
+def get_init_epoch( filename,total_episodes, learn = True ):
+    
+    if filename and learn:
+        index = filename.find('_')
+        exp = int(filename[index+1]) 
+        epoch= int(filename[index+3])
+        if epoch < total_episodes -1:
+            epoch +=1
+        else:
+            epoch = 0
+            exp +=1
+        
+    else:
+        exp=0
+        epoch = 0
+    return exp , epoch
+
+def get_stats(stats_filename, num_experiments, total_episodes, learn = True):
+    
+    if stats_filename and learn:
+        stats =np.load(stats_filename, allow_pickle = True)[()]
+    else:
+        reward_store = np.zeros((num_experiments,total_episodes))
+        intersection_queue_store = np.zeros((num_experiments,total_episodes))
+        stats = {'rewards': reward_store, 'intersection_queue': intersection_queue_store }
+
+    return stats
     
 def plot_rewards(reward_store):
     

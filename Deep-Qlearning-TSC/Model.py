@@ -19,7 +19,7 @@ class Model:
         self.model = model
     
     def get_weights(self):
-        self.model.get_weights()
+        return self.model.get_weights()
     
     def set_weights( self, w ):
         self.model.set_weights(w)
