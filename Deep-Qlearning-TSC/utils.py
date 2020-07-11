@@ -8,6 +8,7 @@ Created on Sun Mar 22 21:55:20 2020
 import matplotlib.pyplot as plt
 import numpy as np 
 import glob
+import seaborn as sns
 
 def get_file_names():
      qmodel_file_name = glob.glob('./qmodel*')
@@ -25,12 +26,16 @@ def get_file_names():
 
      return qmodel_file_name, stats_file_name
 
-def get_init_epoch( filename,total_episodes, learn = True ):
+def get_init_epoch( filename,total_episodes ):
     
-    if filename and learn:
+    if filename:
         index = filename.find('_')
-        exp = int(filename[index+1]) 
-        epoch= int(filename[index+3])
+        exp_start = index + 1 
+        exp_end  = int(filename.find('_', exp_start))
+        exp = int(filename[exp_start:exp_end])
+        epoch_start= exp_end + 1
+        epoch_end = int(filename.find('.', epoch_start))
+        epoch = int(filename[epoch_start:epoch_end])
         if epoch < total_episodes -1:
             epoch +=1
         else:
@@ -46,6 +51,7 @@ def get_stats(stats_filename, num_experiments, total_episodes, learn = True):
     
     if stats_filename and learn:
         stats =np.load(stats_filename, allow_pickle = True)[()]
+      
     else:
         reward_store = np.zeros((num_experiments,total_episodes))
         intersection_queue_store = np.zeros((num_experiments,total_episodes))
@@ -53,8 +59,20 @@ def get_stats(stats_filename, num_experiments, total_episodes, learn = True):
 
     return stats
     
-def plot_rewards(reward_store):
     
+    
+def plot_sample(sample, title, xlabel, legend_label, show= True):
+    
+   #plt.hist(sample, bins = 5, histtype = 'bar')
+    #plt.xlabel(xlabel)
+    ax= sns.distplot(sample, kde=True, label =  legend_label)
+    ax.set(xlabel=xlabel, title= title)
+    ax.legend()
+    if show:
+        plt.show()
+    
+    
+def plot_rewards( reward_store):
     x = np.mean(reward_store, axis = 0 )
     plt.plot( x , label = "Cummulative negative wait times") 
     plt.xlabel('Episodes') 

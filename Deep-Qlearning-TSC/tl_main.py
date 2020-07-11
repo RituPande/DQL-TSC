@@ -128,9 +128,9 @@ class TLAgent:
             traci.trafficlight.setPhase("TL", self.PHASE_EWL_GREEN)
 
     
-    def evaluate_model( self, experiment ):
+    def evaluate_model( self, experiment, seeds ):
         
-        self.traffic_gen.generate_routefile(0)
+        self.traffic_gen.generate_routefile(seeds[self.init_epoch])
         curr_state = self.env.start()
         
         for e in range( self.init_epoch, self.total_episodes):
@@ -166,12 +166,13 @@ class TLAgent:
                 os.remove('stats_{}_{}.npy'.format(experiment, e-1))
             elif experiment !=0:
                 os.remove('stats_{}_{}.npy'.format(experiment-1, self.total_episodes-1))
-            self.traffic_gen.generate_routefile(e+1)
+            if e +1 < self.total_episodes:
+                self.traffic_gen.generate_routefile(seeds[e+1])
             curr_state =self.env.reset()
 
         
-    def execute_classical( self, experiment ):
-        self.traffic_gen.generate_routefile(-1)
+    def execute_classical( self, experiment, seeds ):
+        self.traffic_gen.generate_routefile(seeds[self.init_epoch])
         self.env.start()
          
         for e in range( self.init_epoch, self.total_episodes):
@@ -198,7 +199,8 @@ class TLAgent:
                 os.remove('stats_{}_{}.npy'.format(experiment, e-1))
             elif experiment !=0:
                 os.remove('stats_{}_{}.npy'.format(experiment-1, self.total_episodes-1))
-            self.traffic_gen.generate_routefile(-1)
+            if e +1 < self.total_episodes:
+                self.traffic_gen.generate_routefile(seeds[e+1])
             self.env.reset()
             
         
@@ -288,16 +290,21 @@ if __name__ == "__main__":
     learn = False
     traffic_gen = TrafficGenerator(max_steps)
     qmodel_filename, stats_filename = utils.get_file_names()
-    init_experiment, init_epoch = utils.get_init_epoch( qmodel_filename, total_episodes, learn)
+    init_experiment, init_epoch = utils.get_init_epoch( stats_filename, total_episodes)
     print('init_experiment={} init_epoch={}'.format(init_experiment,init_epoch ))
-    stats = utils.get_stats(stats_filename, num_experiments, total_episodes, learn)
+    stats = utils.get_stats(stats_filename, num_experiments, total_episodes)
     
     
     for experiment in range(init_experiment, num_experiments):
         env = SumoEnv(sumoBinary,max_steps )
         tl = TLAgent( env, traffic_gen, max_steps, num_experiments, total_episodes, qmodel_filename, stats,init_epoch, learn )
         init_epoch = 0 # reset init_epoch after first experiment
-        tl.execute_classical( experiment)
+        if learn:
+            tl.train(experiment)
+        else:
+            seeds = np.load('seed.npy')
+            tl.evaluate_model( experiment, seeds)
+            
         stats = copy.deepcopy(tl.stats)
         print(stats['rewards'][0:experiment+1, :])
         print(stats['intersection_queue'][0:experiment+1, :])

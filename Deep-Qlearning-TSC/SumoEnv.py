@@ -49,7 +49,7 @@ class SumoEnv:
         #print("new_wait_time={}".format(new_wait_time))
         # calculate reward of action taken (change in cumulative waiting time between actions)
         # waiting time = seconds waited by a car since the spawn in the environment, cumulated for every car in incoming lanes
-        reward = self.curr_wait_time - new_wait_time
+        reward = 0.9*self.curr_wait_time - new_wait_time
         #print("reward={}".format(reward))
         self.curr_wait_time = new_wait_time
         
