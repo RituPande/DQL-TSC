@@ -9,8 +9,8 @@ The rest of the paper is organized as follows:
 - Section-IV explains how a traffic intersection is to be configured using Eclipse SUMO for the purpose of the implementation explained in this paper
 - Section –V provides the implementation details of our adaptive traffic control algorithm 
 - Section-VI provides summary of the test results and their analysis. 
-- Section-VII presents the conclusion of the experiment conducted.   
- 
+- Section-VII presents the conclusion of the experiment conducted.  
+
 ## 2. Deep Q-learning  
 Deep Q-learning is a reinforcement learning algorithm which uses a Deep Neural Network (DNN) with Q-learning. In this section we provide basics of reinforcement learning, Q-learning and Deep Q-learning algorithms.
 Reinforcement learning algorithms are a class of machine learning algorithms where an agent learns how to behave in an environment by performing actions and receiving rewards corresponding to their actions. The goal of the agent is to maximize the expected future rewards. The set of all possible states of the environment is called state-space and the set of all actions an agent can perform on the environment is called action-space. The state of the environment, the action taken and the reward received at any time t are denoted by S<sub>t</sub> , A<sub>t</sub> and R<sub>t</sub> respectively.
@@ -20,9 +20,9 @@ Q(S<sub>t</sub>,A<sub>t</sub>)=E[R<sub>t+1</sub>+γR<sub>t+2</sub>+ γ<sup>2</su
 where  γ is the discount factor, such that, 0<γ≤1 . It ensures greater significance to immediate rewards as opposed to those far off in the future.
 
 The equation can be recursively written as follows:   
-Q(S<sub>t</sub>,A<sub>t</sub>) =E[R<sub>t+1</sub>+γ[R<sub>t+2</sub>+γR<sub>t+3</sub>+ γ<sup>2</sup>R<sub>t+4</sub>+⋯] | (S<sub>t</sub>,A<sub>t</sub>)  
+Q(S<sub>t</sub>,A<sub>t</sub>) =E[R<sub>t+1</sub>+γ[R<sub>t+2</sub>+γR<sub>t+3</sub>+ γ<sup>2</sup>R<sub>t+4</sub>+⋯] \| (S<sub>t</sub>,A<sub>t</sub>)  
   
-Q(S<sub>t</sub>,A<sub>t</sub>) =E[R<sub>t+1</sub>+γ Q(S<sub>t+1</sub>,A<sub>t+1</sub>)] | (S<sub>t</sub>,A<sub>t</sub>)  
+Q(S<sub>t</sub>,A<sub>t</sub>) =E[R<sub>t+1</sub>+γ Q(S<sub>t+1</sub>,A<sub>t+1</sub>)] \| (S<sub>t</sub>,A<sub>t</sub>)  
 
 The optimal Q-value Q<sup>\*</sup>(S<sub>t</sub>,A<sub>t</sub>) is calculated as:    
 Q<sup>\*</sup>(S<sub>t</sub>,A<sub>t</sub>) =E[R<sub>t+1</sub>+γ max<sub>(a ϵ A<sub>t+1</sub></sub>Q(S<sub>t+1</sub>,a)] | (S<sub>t</sub>,A<sub>t</sub>)  
@@ -44,7 +44,7 @@ However, for most practical use-cases, the state-action space of the environment
 DQN (Deep Q-Learning Network) architecture is illustrated in the diagram below:   
 
 <p align="center">
-  <img src="https://github.com/ripande29/DQL-TSC/images/DQN.jpg"> <br> 
+  <img src="https://github.com/ripande29/DQL-TSC/blob/master/images/DQN.jpg"> <br> 
   Figure 1. Deep Q-Learning
 </p> 
 
@@ -87,7 +87,7 @@ The state-space for this paper was constructed by assigning incoming lane (towar
 **S** =[ e0, e1, e2 … e78, e79 ] where e є {0,1 }  
 
 <p align="center">
-  <img src="/images/statespace.jpg"> <br> 
+  <img src="https://github.com/ripande29/DQL-TSC/blob/master/images/statespace.jpg"> <br> 
   Figure 2. State-Space
 </p> 
 
@@ -117,7 +117,7 @@ Traffic generation during training should resemble real-life situations as far a
 
  
 <p align="center">
-  <img src="/images/weibull.jpg" width=500 height=500> <br> 
+  <img src="https://github.com/ripande29/DQL-TSC/blob/master/images/weibull.jpg" width=500 height=500> <br> 
   Figure 3. Traffic Simulation
 </p> 
 
