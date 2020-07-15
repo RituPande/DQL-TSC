@@ -44,7 +44,7 @@ However, for most practical use-cases, the state-action space of the environment
 DQN (Deep Q-Learning Network) architecture is illustrated in the diagram below:   
 
 <p align="center">
-  <img src="/images/DQN.jpg"> <br> 
+  <img src="https://github.com/ripande29/DQL-TSC/images/DQN.jpg"> <br> 
   Figure 1. Deep Q-Learning
 </p> 
 
