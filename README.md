@@ -83,6 +83,7 @@ The experiment is set for traffic intersections supporting right-side lane drivi
 - On every arm the right-most lane enables a vehicles to turn right or go straight, the two central lanes bound the driver to go straight while for a vehicle in left-most lane the left turn is the only direction allowed.
 - On every arm the left-most lane has a dedicated traffic light while the other 3 lanes share a common traffic light.
 - A change in traffic light from ‘Red’ to ‘Green’ or vice-versa requires a mandatory ‘Yellow’ phase in between. 
+  
 <a/>
 ### 3.2 State-Space
 The state-space for this paper was constructed by assigning incoming lane (towards the traffic-signal), controlled by a dedicated traffic light, to a lane-group. Each lane-group was further divided into 10 lane-cells. Lane-cells near the traffic intersection were configured to be smaller in length as compared to those further away the intersection. This is because vehicles are slow moving and closely spaced near the intersection than away from it (where they can be fast moving and/or sparsely inter-spaced) . Thus, 4 lanes belonging to an arm of a traffic intersection were divided into 2 lane-groups with 10 lane-cells, accounting for 20 lane-cells per traffic intersection arm and 20 x 4 = 80 lane-cells for the complete traffic intersection. State space was implemented as a vector of 80 integers wherein each element represented whether any vehicle was present or absent in a lane-cell:  
