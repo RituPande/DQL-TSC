@@ -83,8 +83,9 @@ The experiment is set for traffic intersections supporting right-side lane drivi
 - On every arm the right-most lane enables a vehicles to turn right or go straight, the two central lanes bound the driver to go straight while for a vehicle in left-most lane the left turn is the only direction allowed.
 - On every arm the left-most lane has a dedicated traffic light while the other 3 lanes share a common traffic light.
 - A change in traffic light from ‘Red’ to ‘Green’ or vice-versa requires a mandatory ‘Yellow’ phase in between. 
+ 
+<a/>  
   
-<a/>
 ### 3.2 State-Space
 The state-space for this paper was constructed by assigning incoming lane (towards the traffic-signal), controlled by a dedicated traffic light, to a lane-group. Each lane-group was further divided into 10 lane-cells. Lane-cells near the traffic intersection were configured to be smaller in length as compared to those further away the intersection. This is because vehicles are slow moving and closely spaced near the intersection than away from it (where they can be fast moving and/or sparsely inter-spaced) . Thus, 4 lanes belonging to an arm of a traffic intersection were divided into 2 lane-groups with 10 lane-cells, accounting for 20 lane-cells per traffic intersection arm and 20 x 4 = 80 lane-cells for the complete traffic intersection. State space was implemented as a vector of 80 integers wherein each element represented whether any vehicle was present or absent in a lane-cell:  
 **S** =[ e0, e1, e2 … e78, e79 ] where e є {0,1 }  
@@ -96,13 +97,17 @@ The state-space for this paper was constructed by assigning incoming lane (towar
 
  
 ### 3.3 Action space
-The action-space is the set of all possible action an agent can take. For this paper, each possible action mapped to a traffic light phase. A traffic phase corresponds to possible state of traffic-signals controlling the intersection. The allowed traffic-light phases i.e. action-space was defined as follows: 
-A = {NSA, NSLA, EWA, EWLA}							
-NSA:  North South Advance corresponds to traffic-signal state allowing traffic to go from North direction to South and from South to North.
-NSLA= North South Left Advance corresponds to traffic-signal state allowing traffic to go from North towards the East and from the South towards West. Traffic in all other directions is stopped.
-EWA:  East West Advance corresponds to traffic-signal state allowing traffic to go from East direction to West and from West to East. Traffic in all other directions is stopped.
-EWLA:  East West Left Advance corresponds to traffic-signal state allowing traffic to go from East to South and from West towards North. Traffic in all other directions is stopped.
-Allowing traffic through in a specific direction requires the corresponding traffic phase to be set to green. Traffic phase is set to green in units of 10 sec.  Transition of traffic phase from one to another requires the former traffic phase to be set to yellow for a duration of 4 sec.
+The action-space is the set of all possible action an agent can take. For this paper, each possible action mapped to a traffic light phase. A traffic phase corresponds to possible state of traffic-signals controlling the intersection. The allowed traffic-light phases i.e. action-space was defined as follows:   
+A = {NSA, NSLA, EWA, EWLA}  							
+- NSA:  North South Advance corresponds to traffic-signal state allowing traffic to go from North direction to South and from South to North.  
+- NSLA= North South Left Advance corresponds to traffic-signal state allowing traffic to go from North towards the East and from the South towards West. Traffic in all other directions is stopped.  
+- EWA:  East West Advance corresponds to traffic-signal state allowing traffic to go from East direction to West and from West to East. Traffic in all other directions is stopped.  
+- EWLA:  East West Left Advance corresponds to traffic-signal state allowing traffic to go from East to South and from West towards North. Traffic in all other directions is stopped.   
+
+<a/>  
+  
+  
+Allowing traffic through in a specific direction requires the corresponding traffic phase to be set to green. Traffic phase is set to green in units of 10 sec.  Transition of traffic phase from one to another requires the former traffic phase to be set to yellow for a duration of 4 sec.  
 ### 3.4 Deep Neural Network:
 The DNN used in our DQN algorithm has the following characteristics:
 Input layer: Takes a 1 x 80 input of binary vector
@@ -144,8 +149,9 @@ Construction of a network required following steps to be performed.
 The configuration was stored as a net-file in xml format by netedit.
 
 <p align=left>
-   <img align ="left" src="./images/NSA.jpg" width=300 height=300> 
-   <img align ="right" src="./images/NSAY.jpg" width=300 height=300> 
+   <img  src="./images/NSA.jpg" width=300 height=300> 
+   <pre>	</pre>	
+   <img  src="./images/NSAY.jpg" width=300 height=300> 
  </p> 
 
   
