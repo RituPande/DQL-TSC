@@ -116,16 +116,15 @@ Output layer: 1 x 4 units with LINEAR activation function, each unit representin
 ### 3.5 Reward function:
 The reward of an action by the agent was calculated by comparing the cumulative wait time of all vehicles in the simulation in the incoming lane, before and after the action is taken. If the action (traffic phase) resulted in vehicles to leave the intersection, it contributed towards decreasing the cumulative wait times, making the reward positive. On the other hand, an action that did not allow vehicles to cross the intersection, resulted in increase in the number of vehicles waiting at the intersection which  in turn resulted in higher cumulative wait times and hence a negative reward.  
   
-R<sub>t</sub>= 0.9w<sub>t-1</sub> )-w<sub>t</sub>  
+R<sub>t</sub>= 0.9w<sub>t-1</sub> - w<sub>t</sub>  
 where w<sub>t</sub> is the time (in seconds)  waited by  all the vehicles in incoming lanes since the start of environment simulation until time step t. 0.9 is multiplied to w<sub>t-1</sub> to stabilize learning. It results in an action to be considered favorable only if it significantly reduces the cumulative wait time of vehicles compared to previous time step. 
 
 
 ### 3.6 Traffic Simulation
-Traffic generation during training should resemble real-life situations as far as possible. We therefore used Weibull distribution with shape parameter as 2 to simulate traffic for training. This closely emulated the traffic conditions wherein number of vehicles increased early on, representing peak traffic hours, and then gradually decreased.  Also, 75% of the vehicles were simulated to go straight while 25% of the vehicles were simulated to turn left or right.
-
- 
+Traffic generation during training should resemble real-life situations as far as possible. We therefore used Weibull distribution with shape parameter as 2 to simulate traffic for training. This closely emulated the traffic conditions wherein number of vehicles increased early on, representing peak traffic hours, and then gradually decreased.  Also, 75% of the vehicles were simulated to go straight while 25% of the vehicles were simulated to turn left or right.  
+  
 <p align="center">
-  <img src="./images/weibull.jpg" width=500 height=500> <br> 
+  <img src="./images/weibull.jpg" height="500" width="500" > <br> 
   Figure 3. Traffic Simulation
 </p> 
 
