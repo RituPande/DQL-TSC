@@ -1,7 +1,2 @@
 theme: jekyll-theme-cayman
 title: Adaptive Traffic Signal Control Using Deep Reinforcement Learning
-description: Classical Traffic Signal Control is based on human extracted features, such
-as, estimated vehicle queue length for each road at the intersection. The
-signal duration and sequence are fixed. In this paper we explore the
-possibility of using deep reinforcement learning to adapt the traffic signal
-duration and sequence to changing traffic conditions autonomously.
