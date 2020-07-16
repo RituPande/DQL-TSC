@@ -147,10 +147,21 @@ Construction of a network required following steps to be performed.
 <a/>
 The configuration was stored as a net-file in xml format by netedit.
 
-<p align=left>
-   <img  src="./images/NSA.jpg" width=300 height=300> 
-   <pre>	</pre>	
-   <img  src="./images/NSAY.jpg" width=300 height=300> 
+<p >
+   <img  src="./images/NSA.jpg" width="300" height="300">Figure 4. NSA Green and Yellow Phases
+   <img  src="./images/NSAY.jpg" width="300" height="300"> 
+ </p> 
+<p >
+   <img  src="./images/NSLA.jpg" width="300" height="300">Figure 5. NSLA Green and Yellow Phases
+   <img  src="./images/NSLAY.jpg" width="300" height="300"> 
+ </p> 
+<p >
+   <img  src="./images/EWA.jpg" width="300" height="300">Figure 6. EWA Green and Yellow Phases
+   <img  src="./images/EWAY.jpg" width="300" height="300"> 
+ </p> 
+<p >
+   <img  src="./images/EWLA.jpg" width="300" height="300">Figure 7. EWLA Green and Yellow Phases
+   <img  src="./images/EWLAY.jpg" width="300" height="300"> 
  </p> 
 
   
