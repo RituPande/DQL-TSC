@@ -148,24 +148,19 @@ Construction of a network required following steps to be performed.
 The configuration was stored as a net-file in xml format by netedit.
 
 <p >
-   <img  src="./images/NSA.jpg" width="300" height="300">Figure 4. NSA Green and Yellow Phases
-   <img  src="./images/NSAY.jpg" width="300" height="300"> 
+   <img  src="./images/NSA.jpg" width="200" height="200">
+   <img  src="./images/NSAY.jpg" width="200" height="200"> 
+   <img  src="./images/NSLA.jpg" width="200" height="200">
+   <img  src="./images/NSLAY.jpg" width="200" height="200"> 
  </p> 
 <p >
-   <img  src="./images/NSLA.jpg" width="300" height="300">Figure 5. NSLA Green and Yellow Phases
-   <img  src="./images/NSLAY.jpg" width="300" height="300"> 
- </p> 
-<p >
-   <img  src="./images/EWA.jpg" width="300" height="300">Figure 6. EWA Green and Yellow Phases
-   <img  src="./images/EWAY.jpg" width="300" height="300"> 
- </p> 
-<p >
-   <img  src="./images/EWLA.jpg" width="300" height="300">Figure 7. EWLA Green and Yellow Phases
-   <img  src="./images/EWLAY.jpg" width="300" height="300"> 
+   <img  src="./images/EWA.jpg" width="200" height="200">
+   <img  src="./images/EWAY.jpg" width="200" height="200"> 
+   <img  src="./images/EWLA.jpg" width="200" height="200">
+   <img  src="./images/EWLAY.jpg" width="200" height="200"> 
  </p> 
 
   
-
 Traffic for training was generated at run-time, creating a new route-file with 1000 vehicles, at the beginning of every training episode. A route-file is an xml file which defines the route any vehicle takes during simulation. The route-file contains the departure time of every vehicle, the lane and edge that it departs in and the route it takes. The departure time was calculated by sampling from Weibull distribution with shape 2 in range[0-1] and then scaling it to range [0- 5400] sec (duration of a single episode). The vehicles were randomly assigned to edges. Lanes on the chosen edges were also randomly assigned to vehicles such that 75% of the vehicles were configured to go straight and only 25% are configured to turn left or right.  Please refer [2] for details of route-file format. 
 Both the network-file and the route-file were configured in a sumocfg file which is required to be provided to sumo.exe for simulation. For details corresponding to a sumocfg file, please refer [3].
 ## 5. Implementation Details
