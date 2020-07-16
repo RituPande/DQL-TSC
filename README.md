@@ -90,7 +90,7 @@ The state-space for this paper was constructed by assigning incoming lane (towar
 **S** =[ e0, e1, e2 … e78, e79 ] where e є {0,1 }  
 
 <p align="center">
-  <img src="https://github.com/ripande29/DQL-TSC/blob/master/images/statespace.jpg"> <br> 
+  <img src="./images/statespace.jpg"> <br> 
   Figure 2. State-Space
 </p> 
 
@@ -120,7 +120,7 @@ Traffic generation during training should resemble real-life situations as far a
 
  
 <p align="center">
-  <img src="https://github.com/ripande29/DQL-TSC/blob/master/images/weibull.jpg" width=500 height=500> <br> 
+  <img src="./images/weibull.jpg" width=500 height=500> <br> 
   Figure 3. Traffic Simulation
 </p> 
 
@@ -144,8 +144,8 @@ Construction of a network required following steps to be performed.
 The configuration was stored as a net-file in xml format by netedit.
 
 <p align=left>
-   <img align ="left" src="/images/NSA.jpg" width=300 height=300> 
-   <img align ="right" src="/images/NSAY.jpg" width=300 height=300> 
+   <img align ="left" src="./images/NSA.jpg" width=300 height=300> 
+   <img align ="right" src="./images/NSAY.jpg" width=300 height=300> 
  </p> 
 
   
