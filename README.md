@@ -240,11 +240,11 @@ The results were verified to be statistically significant using left-tailed hypo
 #### 6.3.1 Cumulative Negative Wait Time  
 x_diff<sub>wt</sub>= x_adap<sub>wt</sub> - x_fdcs<sub>wt</sub>  
   
-x_diff‾<sub>wt</sub> ̅= 1/n ∑ x_diff<sub>wt</sub>  
+x‾diff<sub>wt</sub> = 1/n ∑ x_diff<sub>wt</sub>  
   
 We stated the Null and the Alternative hypothesis as below:  
 
-**H<sub>o</sub>**: There is no difference between the true mean μ_adap<sub>wt</sub> and μ_fds<sub>wt</sub>  and the difference observed in the sample means x_adap‾<sub>wt</sub> ̅and x_fds‾<sub>wt</sub> was a matter of chance.  i.e.    
+**H<sub>o</sub>**: There is no difference between the true mean μ_adap<sub>wt</sub> and μ_fds<sub>wt</sub>  and the difference observed in the sample means x‾adap<sub>wt</sub> and x‾fds<sub>wt</sub> was a matter of chance.  i.e.    
 μ_diff<sub>wt</sub>= μ_adap<sub>wt</sub>-μ_fds<sub>wt</sub>= 0 
   
 **H<sub>A</sub>**:  Cumulative negative wait time for all vehicles in traffic simulations executed using Adaptive TLCS algorithm is on an average less than the same traffic simulation executed using FDS TLCS. i.e.  
@@ -261,7 +261,7 @@ t_c is the critical value of the t-score for a 100 sample mean, below which it i
 
 |	|Adaptive TLCS - FDS TLCS |
 |-------|-----------------------|
-| x_diff‾<sub>wt</sub> | -572.404 |
+| x‾diff<sub>wt</sub> | -572.404 |
 |σ_diff<sub>wt</sub> | 	733 |
 
 t_score for the simulation sample captured above = -7.8  
@@ -274,11 +274,11 @@ Since the calculated p_value << significance (0.05), we safely rejected H<sub>o<
 
 x_diff<sub>vqs</sub>= x_adap<sub>vqs</sub> - x_fdcs<sub>vqs</sub>  
   
-x_diff‾<sub>vqs</sub> = 1/n ∑ x_diff<sub>vqs</sub>
+x‾diff<sub>vqs</sub> = 1/n ∑ x_diff<sub>vqs</sub>
       
 We stated the Null and the Alternative hypothesis as below:    
 
-**H<sub>o</sub>**: There is no difference between the true mean μ_adap<sub>vqs</sub> and μ_fds<sub>vqs</sub>  and the difference observed in the sample means x_adap‾<sub>vqs</sub> and x_fds‾<sub>vqs</sub> a matter of chance.  i.e.      
+**H<sub>o</sub>**: There is no difference between the true mean μ_adap<sub>vqs</sub> and μ_fds<sub>vqs</sub>  and the difference observed in the sample means x‾adap<sub>vqs</sub> and x‾fds<sub>vqs</sub> a matter of chance.  i.e.      
 μ_diff<sub>vqs</sub>= μ_adap<sub>vqs</sub>-μ_fds<sub>vqs</sub>= 0   
   
 **H<sub>A</sub>**:  Cumulative vehicle queue size for all vehicles in traffic simulations executed using Adaptive TLCS algorithm is on an average less than the same traffic simulation executed using FDS TLCS. i.e.    
@@ -298,8 +298,8 @@ t_c is the critical value of the t-score for a 100 sample mean, below which it i
 
 |	|Adaptive TLCS - FDS TLCS |
 |-------|-----------------------|
-| x_diff‾<sub>vqs</sub> ̅| -206.38|
-|σ_diff‾<sub>vqs</sub> | 	69.03 |
+| x‾diff<sub>vqs</sub> | -206.38|
+|σ_diff<sub>vqs</sub> | 	69.03 |
 
 t_score for the simulation sample captured above = -29.8   
   
