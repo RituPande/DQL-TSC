@@ -170,7 +170,7 @@ Traffic for training was generated at run-time, creating a new route-file with 1
 Both the network-file and the route-file were configured in a sumocfg file which is required to be provided to sumo.exe for simulation. For details corresponding to a sumocfg file, please refer [3].
 
 <p align="center">
-  <img src="./images/simulation.gif" width="800" height = "500" border = "3" > <br> 
+	<kbd><img src="./images/simulation.gif" width="800" height = "500" border = "3" > </kbd> <br> 
   Figure 5. Traffic Simulation in SUMO
 </p> 
 ## 5. Implementation Details
