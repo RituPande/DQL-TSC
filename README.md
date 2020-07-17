@@ -189,7 +189,6 @@ TLAgent: This class encapsulates the implementation of an adaptive TLCS agent th
   - If the episode has ended i.e. done = true, Q(S<sub>t</sub>,A<sub>t</sub>)=  R<sub>t+1</sub>  ELSE   
   - Predict all Q-values corresponding to state S<sub>t+1</sub> and find the maximum amongst them  
   - Update Q-value corresponding to At action for state St obtained in step a. as per equation.  
-  
   <a/>  
   c. The input for training consists of array of St in the sampled batch and the target for training are the Q-values updated in step b. above.
 
@@ -232,9 +231,11 @@ To ensure that the decrease observed in the mean cumulative negative wait time a
  
 ### 6.3 Result Analysis
 The results were verified to be statistically significant using left-tailed hypothesis testing. As the 100 simulations used to compare the performance of FDS and Adaptive TLCS were same, the means of statistics used were treated as paired means. To perform hypothesis testing on paired means, the absolute value of measurements obtained for a particular simulation by executing FDS TLCS were subtracted from absolute values of measurements obtained by executing Adaptive TLCS ( to get rid of the negative sign in cumulative wait time measurements)  
+  
 **Cumulative Negative Wait Time:**  
-x_diff<sub>wt</sub>= x_adap<sub>wt</sub> - x_fdcs<sub>wt</sub>      								
-x_diff‾<sub>wt</sub> ̅= 1/n ∑ x_diff<sub>wt</sub>   
+x_diff<sub>wt</sub>= x_adap<sub>wt</sub> - x_fdcs<sub>wt</sub>  
+  
+x_diff‾<sub>wt</sub> ̅= 1/n ∑ x_diff<sub>wt</sub>  
   
 We stated the Null and the Alternative hypothesis as below:  
 
@@ -266,8 +267,9 @@ Since the calculated p_value << significance (0.05), we safely rejected H<sub>o<
    
 **Cumulative Vehicle Queue Size:**  
   
-x_diff<sub>vqs</sub>= x_adap<sub>vqs</sub> - x_fdcs<sub>vqs</sub>        								
-x_diff‾<sub>vqs</sub> ̅= 1/n ∑ x_diff<sub>vqs</sub>       
+x_diff<sub>vqs</sub>= x_adap<sub>vqs</sub> - x_fdcs<sub>vqs</sub>  
+  
+x_diff‾<sub>vqs</sub> ̅= 1/n ∑ x_diff<sub>vqs</sub>        
     
 We stated the Null and the Alternative hypothesis as below:    
 
