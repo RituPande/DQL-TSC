@@ -193,7 +193,7 @@ TLAgent: This class encapsulates the implementation of an adaptive TLCS agent th
 - At very time step a batch of 100 random experience tuple are chosen and prepared for training. This approach of learning from cached experiences is called experience replay.    The replay logic is implemented as follows:  
   - Q-values for all actions corresponding to state St  for all samples in the batch are obtained by predicting them from the DNN model.  
   - The Q-values corresponding to At for each sample in the batch is updated as per following rules:    
-    - If the episode has ended i.e. done = true, Q(S<sub>t</sub>,A<sub>t</sub>)=  R<sub>t+1</sub>  ELSE   
+    - If the episode has ended i.e. done = true, Q'(S<sub>t</sub>,A<sub>t</sub>)=  R<sub>t+1</sub>  ELSE   
     - Predict all Q-values corresponding to state S<sub>t+1</sub> and find the maximum amongst them  
     - Update Q-value corresponding to A<sub>t</sub> action for state S<sub>t</sub> as using the formula:    
       Q'(S<sub>t</sub>,A<sub>t</sub>) = R<sub>t+1</sub>+γ max <sub>a ϵ A<sub>t+1</sub></sub> Q(S<sub>t+1</sub>,a )
