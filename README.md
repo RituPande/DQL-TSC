@@ -196,7 +196,7 @@ TLAgent: This class encapsulates the implementation of an adaptive TLCS agent th
   - If the episode has ended i.e. done = true, Q(S<sub>t</sub>,A<sub>t</sub>)=  R<sub>t+1</sub>  ELSE   
   - Predict all Q-values corresponding to state S<sub>t+1</sub> and find the maximum amongst them  
   - Update Q-value corresponding to At action for state St obtained in step a. as per equation.    
-  <a/>    
+ <a/>      
   c. The input for training consists of array of St in the sampled batch and the target for training are the Q-values updated in step b. above.
 
 - Also, using the same DNN for predicting Q-values to prepare training data and for updating via training can cause big oscillations during training. The situation is similar to chasing a moving target. Therefore, to mitigate this issue our DQN algorithm maintains an additional Target DNN and is used to predict Q-values corresponding to S<sub>t+1</sub> . The weights of this network are held constant for 10 episodes after which the weights are copied from the trained DNN to the target DNN.  
