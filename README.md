@@ -190,11 +190,11 @@ TLAgent: This class encapsulates the implementation of an adaptive TLCS agent th
   - Predict all Q-values corresponding to state S<sub>t+1</sub> and find the maximum amongst them  
   - Update Q-value corresponding to At action for state St obtained in step a. as per equation.  
   
-  </a>  
+  <a/>  
   c. The input for training consists of array of St in the sampled batch and the target for training are the Q-values updated in step b. above.
 
 - Also, using the same DNN for predicting Q-values to prepare training data and for updating via training can cause big oscillations during training. The situation is similar to chasing a moving target. Therefore, to mitigate this issue our DQN algorithm maintains an additional Target DNN and is used to predict Q-values corresponding to S<sub>t+1</sub> . The weights of this network are held constant for 10 episodes after which the weights are copied from the trained DNN to the target DNN.  
-</a>   
+<a/>   
 
 ## 6. Results
 This section discusses the training results and evaluates the performance of the adaptive TLCS model against the FDS TLCS agent.  
@@ -231,7 +231,7 @@ The decrease in mean cumulative wait time for a simulation was observed to be ab
 To ensure that the decrease observed in the mean cumulative negative wait time and mean cumulative vehicle queue size for simulations executed using adaptive TLCS was not due to chance, we also verified that the results were statistically significant.
  
 ### 6.3 Result Analysis
-The results were verified to be statistically significant using left-tailed hypothesis testing. As the 100 simulations used to compare the performance of FDS and Adaptive TLCS were same, the means of statistics used were treated as paired means. To perform hypothesis testing on paired means, the absolute value of measurements obtained for a particular simulation by executing FDS TLCS were subtracted from absolute values of measurements obtained by executing Adaptive TLCS ( to get rid of the negative sign in cumulative wait time measurements)
+The results were verified to be statistically significant using left-tailed hypothesis testing. As the 100 simulations used to compare the performance of FDS and Adaptive TLCS were same, the means of statistics used were treated as paired means. To perform hypothesis testing on paired means, the absolute value of measurements obtained for a particular simulation by executing FDS TLCS were subtracted from absolute values of measurements obtained by executing Adaptive TLCS ( to get rid of the negative sign in cumulative wait time measurements)  
 **Cumulative Negative Wait Time:**  
 x_diff<sub>wt</sub>= x_adap<sub>wt</sub> - x_fdcs<sub>wt</sub>      								
 x_diff‾<sub>wt</sub> ̅= 1/n ∑ x_diff<sub>wt</sub>   
@@ -262,13 +262,10 @@ t_score for the simulation sample captured above = -7.8
   
 P_value < 0.00001  
   
-P-value is defined as the probability of observing x_diff<sub>wt</sub> ̅<= -572.404 for samples of 100 traffic simulations given H<sub>o</sub> is true. More formally:  
-
-P_value = P (x_diff‾<sub>wt</sub> ) ̅≤-572.404 | H<sub>o</sub>=True )   
-
 Since the calculated p_value << significance (0.05), we safely rejected H<sub>o</sub>        
    
-**Cumulative Vehicle Queue Size:**
+**Cumulative Vehicle Queue Size:**  
+  
 x_diff<sub>vqs</sub>= x_adap<sub>vqs</sub> - x_fdcs<sub>vqs</sub>        								
 x_diff‾<sub>vqs</sub> ̅= 1/n ∑ x_diff<sub>vqs</sub>       
     
@@ -301,9 +298,6 @@ t_score for the simulation sample captured above = -29.8
   
 P_value < 0.00001  
   
-P-value is defined as the probability of observing x_diff‾<sub>vqs</sub> ̅<= -206.38 for samples of 100 traffic simulations given H<sub>o</sub> is true. More formally:  
-
-P_value = P (x_diff‾<sub>vqs</sub> ) ̅≤--206.38 | H<sub>o</sub>=True )        
 Since the calculated p_value << significance (0.05), we safely rejected H<sub>o</sub>  
   
 
