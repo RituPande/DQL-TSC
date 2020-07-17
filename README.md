@@ -194,8 +194,8 @@ TLAgent: This class encapsulates the implementation of an adaptive TLCS agent th
   c. The input for training consists of array of St in the sampled batch and the target for training are the Q-values updated in step b. above.
 
 - Also, using the same DNN for predicting Q-values to prepare training data and for updating via training can cause big oscillations during training. The situation is similar to chasing a moving target. Therefore, to mitigate this issue our DQN algorithm maintains an additional Target DNN and is used to predict Q-values corresponding to S<sub>t+1</sub> . The weights of this network are held constant for 10 episodes after which the weights are copied from the trained DNN to the target DNN.  
-   
-</a>
+</a>   
+
 ## 6. Results
 This section discusses the training results and evaluates the performance of the adaptive TLCS model against the FDS TLCS agent.  
 
@@ -259,11 +259,15 @@ t_c is the critical value of the t-score for a 100 sample mean, below which it i
 |σ_diff<sub>wt</sub> | 	733 |
 
 t_score for the simulation sample captured above = -7.8  
+  
 P_value < 0.00001  
-P-value is defined as the probability of observing x_diff<sub>wt</sub> ̅<= -572.404 for samples of 100 traffic simulations given H<sub>o</sub> is true. More formally:    
-P_value = P (x_diff‾<sub>wt</sub> ) ̅≤-572.404 | H<sub>o</sub>=True )      
-Since the calculated p_value << significance (0.05), we safely rejected H<sub>o</sub>    
-   
+  
+P-value is defined as the probability of observing x_diff<sub>wt</sub> ̅<= -572.404 for samples of 100 traffic simulations given H<sub>o</sub> is true. More formally:  
+
+P_value = P (x_diff‾<sub>wt</sub> ) ̅≤-572.404 | H<sub>o</sub>=True )   
+
+Since the calculated p_value << significance (0.05), we safely rejected H<sub>o</sub>        
+   
 **Cumulative Vehicle Queue Size:**
 x_diff<sub>vqs</sub>= x_adap<sub>vqs</sub> - x_fdcs<sub>vqs</sub>        								
 x_diff‾<sub>vqs</sub> ̅= 1/n ∑ x_diff<sub>vqs</sub>       
@@ -276,9 +280,12 @@ We stated the Null and the Alternative hypothesis as below:
 **H<sub>A</sub>**:  Cumulative vehicle queue size for all vehicles in traffic simulations executed using Adaptive TLCS algorithm is on an average less than the same traffic simulation executed using FDS TLCS. i.e.    
 μ_diff<sub>vqs</sub> < 0    
   
-Since the standard deviation of the actual distribution  is not known the t-distribution was used for hypothesis testing. For a confidence level of 95% (significance = 0.05), degrees of freedom 99 (100-1) and left-tailed hypothesis testing    
-t_c=  -1.66    
-t_c is the critical value of the t-score for a 100 sample mean, below which it is safe to reject the null hypothesis H<sub>o</sub>.    
+Since the standard deviation of the actual distribution  is not known the t-distribution was used for hypothesis testing. For a confidence level of 95% (significance = 0.05), degrees of freedom 99 (100-1) and left-tailed hypothesis testing  
+
+t_c=  -1.66  
+  
+t_c is the critical value of the t-score for a 100 sample mean, below which it is safe to reject the null hypothesis H<sub>o</sub>.  
+  
 
  <p align="center">
   <img src="./images/analysis2.jpg">
@@ -290,11 +297,15 @@ t_c is the critical value of the t-score for a 100 sample mean, below which it i
 | x_diff‾<sub>vqs</sub> ̅| -206.38|
 |σ_diff‾<sub>vqs</sub> | 	69.03 |
 
-t_score for the simulation sample captured above = -29.8  
+t_score for the simulation sample captured above = -29.8   
+  
 P_value < 0.00001  
-P-value is defined as the probability of observing x_diff‾<sub>vqs</sub> ̅<= -206.38 for samples of 100 traffic simulations given H<sub>o</sub> is true. More formally:    
-P_value = P (x_diff‾<sub>vqs</sub> ) ̅≤--206.38 | H<sub>o</sub>=True )      
-Since the calculated p_value << significance (0.05), we safely rejected H<sub>o</sub>   
+  
+P-value is defined as the probability of observing x_diff‾<sub>vqs</sub> ̅<= -206.38 for samples of 100 traffic simulations given H<sub>o</sub> is true. More formally:  
+
+P_value = P (x_diff‾<sub>vqs</sub> ) ̅≤--206.38 | H<sub>o</sub>=True )        
+Since the calculated p_value << significance (0.05), we safely rejected H<sub>o</sub>  
+  
 
 ## 7. Conclusion
 We could prove that the proposed approach of building an adaptive TLCS using Deep Reinforcement Learning was not only viable but also more effective than the FDS TLCS. We achieved a reduction of 8.5% in the average cumulative wait time of vehicles at the intersection using adaptive TLCS as compared FSD TLCS and a reduction of about 18.5% in the average cumulative vehicle queue length at the traffic intersection. 
