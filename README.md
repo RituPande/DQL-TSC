@@ -173,6 +173,8 @@ Both the network-file and the route-file were configured in a sumocfg file which
 	<kbd><img src="./images/simulation.gif" width="800" height = "500" border = "3" > </kbd> <br> 
   Figure 5. Traffic Simulation in SUMO
 </p> 
+
+  
 ## 5. Implementation Details
 The implementation for training an Adaptive TLCS for this paper includes three classes:  
 
