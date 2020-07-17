@@ -108,11 +108,13 @@ A = {NSA, NSLA, EWA, EWLA}
   
   
 Allowing traffic through in a specific direction requires the corresponding traffic phase to be set to green. Traffic phase is set to green in units of 10 sec.  Transition of traffic phase from one to another requires the former traffic phase to be set to yellow for a duration of 4 sec.  
+
 ### 3.4 Deep Neural Network:
-The DNN used in our DQN algorithm has the following characteristics:
-Input layer: Takes a 1 x 80 input of binary vector
-Hidden layers: 2 hidden layers of 400 units each with RELU activation function
-Output layer: 1 x 4 units with LINEAR activation function, each unit representing a traffic light phase
+The DNN used in our DQN algorithm has the following characteristics:  
+Input layer: Takes a 1 x 80 input of binary vector  
+Hidden layers: 2 hidden layers of 400 units each with RELU activation function  
+Output layer: 1 x 4 units with LINEAR activation function, each unit representing a traffic light phase  
+
 ### 3.5 Reward function:
 The reward of an action by the agent was calculated by comparing the cumulative wait time of all vehicles in the simulation in the incoming lane, before and after the action is taken. If the action (traffic phase) resulted in vehicles to leave the intersection, it contributed towards decreasing the cumulative wait times, making the reward positive. On the other hand, an action that did not allow vehicles to cross the intersection, resulted in increase in the number of vehicles waiting at the intersection which  in turn resulted in higher cumulative wait times and hence a negative reward.  
   
@@ -145,8 +147,8 @@ Construction of a network required following steps to be performed.
 - Connection Mode: 
   - Connections were edited to ensure that left lane of a 4-lane edge could only turn left, the two center lanes could only go straight and the right-most lane could go straight or right.  
 <a/>
-The configuration was stored as a net-file in xml format by netedit.
-
+The configuration was stored as a net-file in xml format by netedit.<br>
+<br>
 <p >
    <img  src="./images/NSA.jpg" width="200" height="200">
    <img  src="./images/NSAY.jpg" width="200" height="200"> 
@@ -167,112 +169,131 @@ The configuration was stored as a net-file in xml format by netedit.
 Traffic for training was generated at run-time, creating a new route-file with 1000 vehicles, at the beginning of every training episode. A route-file is an xml file which defines the route any vehicle takes during simulation. The route-file contains the departure time of every vehicle, the lane and edge that it departs in and the route it takes. The departure time was calculated by sampling from Weibull distribution with shape 2 in range[0-1] and then scaling it to range [0- 5400] sec (duration of a single episode). The vehicles were randomly assigned to edges. Lanes on the chosen edges were also randomly assigned to vehicles such that 75% of the vehicles were configured to go straight and only 25% are configured to turn left or right.  Please refer [2] for details of route-file format. 
 Both the network-file and the route-file were configured in a sumocfg file which is required to be provided to sumo.exe for simulation. For details corresponding to a sumocfg file, please refer [3].
 ## 5. Implementation Details
-The implementation for training an Adaptive TLCS for this paper includes three classes:
-	Model: The Model class implements the DNN to approximate the Q-value function
-The model is implemented using the Keras v-2.2.4 with Tensorflow v-1.12.0 backend.
+The implementation for training an Adaptive TLCS for this paper includes three classes:  
 
-	SumoEnv: This class encapsulates the simulation of traffic intersection as described in the previous sections. The class uses TRACI (Traffic Control Interface) to retrieve statistics corresponding  to simulated objects and to manipulate their behavior during training. It provides interfaces that can be used by the agent to :
-	Start environment simulation
-	Reset environment simulation
-	Perform action on the environment and receive rewards for it
-	Query existing environment state
-	Query statistics, such as, cumulative wait time of all vehicles in a simulation and cumulative intersection queue size at any given time in a training episode.
+Model: The Model class implements the DNN to approximate the Q-value function. The model is implemented using the Keras v-2.2.4 with Tensorflow v-1.12.0 backend.  
+SumoEnv: This class encapsulates the simulation of traffic intersection as described in the previous sections. The class uses TRACI (Traffic Control Interface) to retrieve statistics corresponding  to simulated objects and to manipulate their behavior during training. It provides interfaces that can be used by the agent to :
+- Start environment simulation
+- Reset environment simulation
+- Perform action on the environment and receive rewards for it
+- Query existing environment state
+- Query statistics, such as, cumulative wait time of all vehicles in a simulation and cumulative intersection queue size at any given time in a training episode.
 
-	TLAgent: This class encapsulates the implementation of an adaptive TLCS agent that trains an instance of Model class to approximate Q-value function by interacting with the SumoEnv class. This class implements the DQN algorithm, selecting the actions to be taken on the environment. It also implements a fixed-duration and sequence traffic signal control system (henceforth referred to as FDS TLCS in this paper) agent enabling comparison of performance between adaptive and fixed time-sequence traffic signal control strategies. Following are key implementation details of DQN algorithm implemented in the class
+TLAgent: This class encapsulates the implementation of an adaptive TLCS agent that trains an instance of Model class to approximate Q-value function by interacting with the SumoEnv class. This class implements the DQN algorithm, selecting the actions to be taken on the environment. It also implements a fixed-duration and sequence traffic signal control system (henceforth referred to as FDS TLCS in this paper) agent enabling comparison of performance between adaptive and fixed time-sequence traffic signal control strategies. Following are key implementation details of DQN algorithm implemented in the class
  
-	A cyclic replay buffer of size 50000 is created which saves  experiences of the agent with the environment:  Each experience is constituted of a tuple
-[St, At, Rt+1, St+1, done ] where done is true if training episode is complete else it is set to False.
+- A cyclic replay buffer of size 50000 is created which saves  experiences of the agent with the environment:  Each experience is constituted of a tuple [S<sub>t</sub>, A<sub>t</sub>, R<sub>t+1</sub>, S<sub>t+1</sub>, done ] where done is true if training episode is complete else it is set to False.  
 
-	At very time step a batch of 100 random experience tuple are chosen and prepared for training. This approach of learning from cached experiences is called experience replay. The replay logic is implemented as follows:
-	Q-values for all actions corresponding to state St  for all samples in the batch are obtained by predicting them from the DNN model.
-	The Q-values corresponding to At for each sample in the batch is updated as per following rules
-	If the episode has ended i.e. done = true, 〖Q(S〗_t,A_(t  ))=  〖 R〗_(t+1)  ELSE
-	Predict all Q-values corresponding to state S_(t+1) and find the maximum amongst them
-	Update Q-value corresponding to At action for state St obtained in step a. as per equation (5). 
+- At very time step a batch of 100 random experience tuple are chosen and prepared for training. This approach of learning from cached experiences is called experience replay. The replay logic is implemented as follows:  
+  a. Q-values for all actions corresponding to state St  for all samples in the batch are obtained by predicting them from the DNN model.  
+  b.  The Q-values corresponding to At for each sample in the batch is updated as per following rules:    
+  - If the episode has ended i.e. done = true, Q(S<sub>t</sub>,A<sub>t</sub>)=  R<sub>t+1</sub>  ELSE   
+  - Predict all Q-values corresponding to state S<sub>t+1</sub> and find the maximum amongst them  
+  - Update Q-value corresponding to At action for state St obtained in step a. as per equation (5). 
+  </a>  
+  c. The input for training consists of array of St in the sampled batch and the target for training are the Q-values updated in step b. above.
 
-	The input for training consists of array of St in the sampled batch and the target for training are the Q-values updated in step b. above.
-
-	Also, using the same DNN for predicting Q-values to prepare training data and for updating via training can cause big oscillations during training. The situation is similar to chasing a moving target. Therefore, to mitigate this issue our DQN algorithm maintains an additional Target DNN and is used to predict Q-values corresponding to St+1 . The weights of this network are held constant for 10 episodes after which the weights are copied from the trained DNN to the target DNN.
+- Also, using the same DNN for predicting Q-values to prepare training data and for updating via training can cause big oscillations during training. The situation is similar to chasing a moving target. Therefore, to mitigate this issue our DQN algorithm maintains an additional Target DNN and is used to predict Q-values corresponding to S<sub>t+1</sub> . The weights of this network are held constant for 10 episodes after which the weights are copied from the trained DNN to the target DNN.  
  
 ## 6. Results
-This section discusses the training results and evaluates the performance of the adaptive TLCS model against the FDS TLCS agent.
-	Training
+This section discusses the training results and evaluates the performance of the adaptive TLCS model against the FDS TLCS agent.  
+
+### 6.1 Training
 The following plots are average of 3 training experiments, each for a duration of 100 episodes.
 
-    	   
+ <p align="center">
+  <img src="./images/training_1.jpg">
+  <img src="./images/training_2.jpg">
+ </p>   	   
 
 The plots above show how the negative cumulative wait times of vehicles on the traffic intersection experience an overall decrease with every episode as the training progresses. Another statistic, cumulative intersection queue size, also shows progressive decrease during training. Note that the traffic simulation is randomly generated for every episode during training. The better performance of our traffic-signal controller agent on both counts (cumulative negative wait files and traffic intersection queue size) as training progresses proves that our DNN model is successfully learning to adapt traffic-signals to traffic conditions.  
                           
-## 7. Model Evaluation	
+### 6.2 Model Evaluation	
 While we can see that Deep Q-Learning can be used to adapt to the traffic behavior, we have not yet shown how this approach compares to the classical FDS traffic system control.  
-To do so we generated 100 random traffic simulations in SUMO as per criteria defined in section 3.6.  The same simulations were executed using our learned DQN model and the FDS traffic control model.  During execution, the DNN model was evaluated for optimal policy π^* for all the 100 simulations and the performance statistics recorded. Policy π^* evaluation involves taking actions that have maximum Q-value in the state where the agent is at any time-step t. Similarly, the performance statistics generated on execution of FDS traffic control system was also recorded.  
-
+To do so we generated 100 random traffic simulations in SUMO as per criteria defined in section 3.6.  The same simulations were executed using our learned DQN model and the FDS traffic control model.  During execution, the DNN model was evaluated for optimal policy π^* for all the 100 simulations and the performance statistics recorded. Policy π^* evaluation involves taking actions that have maximum Q-value in the state where the agent is at any time-step t. Similarly, the performance statistics generated on execution of FDS traffic control system was also recorded. <br>  
+ <p align="center">
+  <img src="./images/eval1.jpg">
+  <img src="./images/eval2.jpg">
+ </p>   
   
-              
+We compared the performance of Adaptive and FDS traffic control system by comparing the cumulative negative wait time (as defined in section 3.5) and cumulative vehicle queue size for each of the 100 simulations. We observe that the mean of both the statistics shifted to the left i.e. vehicles in simulations executed using our adaptive TLCS algorithm experience lesser wait times and queues at the traffic intersection as opposed simulations executed using FDS TLCS.  
+  
 
-   
-
-We compared the performance of Adaptive and FDS traffic control system by comparing the cumulative negative wait time (as defined in section 3.5) and cumulative vehicle queue size for each of the 100 simulations. We observe that the mean of both the statistics shifted to the left i.e. vehicles in simulations executed using our adaptive TLCS algorithm experience lesser wait times and queues at the traffic intersection as opposed simulations executed using FDS TLCS.
-	FDS TLCS	Adaptive TLCS
-〖 x ̅〗_(nwt )	6727.438	6155.03
-〖σ 〗_nwt	473.242	774.624
-〖 x ̅〗_(vqs )	1116.71	910.33
-σ_vqs	66.849	91.869
+|	| FDS TLCS  |	Adaptive TLCS |
+|-------|----------|------------------|
+| x‾<sub>nwt</sub>  |	6727.438 | 6155.03 |  
+| σ<sub>nwt</sub>  | 473.242	 | 774.624 | 
+| x‾<sub>vqs</sub>  |	1116.71	 | 910.33  |
+| σ<sub>vqs</sub>  | 66.849	 | 91.869  |
 
 The decrease in mean cumulative wait time for a simulation was observed to be about 8.5% while the decrease in the mean cumulative vehicle queue size of a simulation was observed to be about 18.5 %. 
 To ensure that the decrease observed in the mean cumulative negative wait time and mean cumulative vehicle queue size for simulations executed using adaptive TLCS was not due to chance, we also verified that the results were statistically significant.
  
-	Result Analysis
+### 6.3 Result Analysis
 The results were verified to be statistically significant using left-tailed hypothesis testing. As the 100 simulations used to compare the performance of FDS and Adaptive TLCS were same, the means of statistics used were treated as paired means. To perform hypothesis testing on paired means, the absolute value of measurements obtained for a particular simulation by executing FDS TLCS were subtracted from absolute values of measurements obtained by executing Adaptive TLCS ( to get rid of the negative sign in cumulative wait time measurements)
-Cumulative Negative Wait Time:
-〖x_diff〗_wt= 〖x _adap〗_(wt )- 〖x _fdcs〗_(wt )    								….(14)
-(〖x_diff〗_wt ) ̅= 1/n∑_0^n▒〖x_diff〗_wt 									….(15)
-We stated the Null and the Alternative hypothesis as below:
-H_o: There is no difference between the true mean 〖μ_adap〗_wt and 〖μ_fds〗_wt  and the difference observed in the sample means (〖x_adap〗_wt ) ̅ and (〖x_fds〗_wt ) ̅ was a matter of chance.  i.e.
-〖μ_diff〗_wt= 〖μ_adap〗_wt-〖μ_fds〗_wt= 0								….(16)	
-H_A:  Cumulative negative wait time for all vehicles in traffic simulations executed using Adaptive TLCS algorithm is on an average less than the same traffic simulation executed using FDS TLCS. i.e.
-〖μ_diff〗_wt<0
+**Cumulative Negative Wait Time:**
+x_diff<sub>wt</sub>= x_adap<sub>wt</sub> - x_fdcs<sub>wt</sub>    								
+x_diff‾<sub>wt</sub> ̅= 1/n ∑ x_diff<sub>wt</sub>   
+  
+We stated the Null and the Alternative hypothesis as below:  
 
-Since the true mean 〖μ_diff〗_wt is not known the t-distribution was used for hypothesis testing. For a confidence level of 95% (significance = 0.05), degrees of freedom 99 (100-1) and left-tailed hypothesis testing:
-t_c=  -1.66
-t_c is the critical value of the t-score for a 100 sample mean, below which it is safe to reject the null hypothesis H_o.
+H<sub>o</sub>: There is no difference between the true mean μ_adap<sub>wt</sub> and μ_fds<sub>wt</sub>  and the difference observed in the sample means x_adap<sub>wt</sub> ̅ and x_fds<sub>wt</sub> ̅was a matter of chance.  i.e.    
+μ_diff<sub>wt</sub>= μ_adap<sub>wt</sub>-μ_fds<sub>wt</sub>= 0 
+  
+H<sub>A</sub>:  Cumulative negative wait time for all vehicles in traffic simulations executed using Adaptive TLCS algorithm is on an average less than the same traffic simulation executed using FDS TLCS. i.e.  
+μ_diff<sub>wt</sub><0  
+  
+Since the standard deviation of the actual distribution  is not known the t-distribution was used for hypothesis testing. For a confidence level of 95% (significance = 0.05), degrees of freedom 99 (100-1) and left-tailed hypothesis testing  
+t_c=  -1.66  
+t_c is the critical value of the t-score for a 100 sample mean, below which it is safe to reject the null hypothesis H<sub>o</sub>.  
+
+ <p align="center">
+  <img src="./images/analysis1.jpg">
+ </p>
  
 
-	Adaptive TLCS-  FDS TLCS
-(〖x_diff〗_wt ) ̅	-572.404
-〖σ_diff〗_wt	733
+|	|Adaptive TLCS - FDS TLCS |
+|-------|-----------------------|
+| x_diff‾<sub>wt</sub> ̅| -572.404|
+|σ_diff‾<sub>wt</sub> | 	733 |
 
 t_score for the simulation sample captured above = -7.8
 P_value < 0.00001
-P-value is defined as the probability of observing (〖x_diff〗_wt ) ̅<= -572.404 for samples of 100 traffic simulations given H_o is true. More formally:
-P_value = P (〖(x_diff〗_wt ) ̅≤-572.404 | H_o=True )  
-Since the calculated p_value << significance (0.05), we safely rejected H_o 
+P-value is defined as the probability of observing x_diff<sub>wt</sub> ̅<= -572.404 for samples of 100 traffic simulations given H<sub>o</sub> is true. More formally:  
+P_value = P (x_diff‾<sub>wt</sub> ) ̅≤-572.404 | H<sub>o</sub>=True )    
+Since the calculated p_value << significance (0.05), we safely rejected H<sub>o</sub> 
  
-Cumulative Vehicle Queue Size:
-〖x_diff〗_vqs= 〖x _adap〗_(vqs )- 〖x _fdcs〗_(vqs )    								….(14)
-(〖x_diff〗_vqs ) ̅= 1/n∑_0^n▒〖x_diff〗_vqs 									….(15)
-We stated the Null and the Alternative hypothesis as below:
-H_o: There is no difference between the true mean 〖μ_adap〗_vqs and 〖μ_fds〗_vqs  and the difference observed in the sample means (〖x_adap〗_vqs ) ̅ and (〖x_fds〗_vqs ) ̅ was a matter of chance.  i.e.
-〖μ_diff〗_vqs= 〖μ_adap〗_vqs-〖μ_fds〗_vqs= 0								….(16)	
-H_A:  Cumulative negative wait time for all vehicles in traffic simulations executed using Adaptive TLCS algorithm is on an average less than the same traffic simulation executed using FDS TLCS. i.e.
-〖μ_diff〗_vqs<0
-Since the true mean 〖μ_diff〗_vqs is not known the t-distribution is used for hypothesis testing. For a confidence level of 95% (significance = 0.05), degrees of freedom 99 (100-1) and left-tailed hypothesis testing:
-t_c=  -1.66
-t_c is the critical value of the t-score for a 100 sample mean, below which it is safe to reject the null hypothesis H_o.   
- 
+**Cumulative Vehicle Queue Size:**
+x_diff<sub>vqs</sub>= x_adap<sub>vqs</sub> - x_fdcs<sub>vqs</sub>    								
+x_diff‾<sub>vqs</sub> ̅= 1/n ∑ x_diff<sub>vqs</sub>   
+  
+We stated the Null and the Alternative hypothesis as below:  
 
+H<sub>o</sub>: There is no difference between the true mean μ_adap<sub>vqs</sub> and μ_fds<sub>vqs</sub>  and the difference observed in the sample means x_adap<sub>vqs</sub> ̅ and x_fds<sub>vqs</sub> ̅was a matter of chance.  i.e.    
+μ_diff<sub>vqs</sub>= μ_adap<sub>vqs</sub>-μ_fds<sub>vqs</sub>= 0 
+  
+H<sub>A</sub>:  Cumulative vehicle queue size for all vehicles in traffic simulations executed using Adaptive TLCS algorithm is on an average less than the same traffic simulation executed using FDS TLCS. i.e.  
+μ_diff<sub>vqs</sub> < 0  
+  
+Since the standard deviation of the actual distribution  is not known the t-distribution was used for hypothesis testing. For a confidence level of 95% (significance = 0.05), degrees of freedom 99 (100-1) and left-tailed hypothesis testing  
+t_c=  -1.66  
+t_c is the critical value of the t-score for a 100 sample mean, below which it is safe to reject the null hypothesis H<sub>o</sub>.  
 
+ <p align="center">
+  <img src="./images/analysis2.jpg">
+ </p>
  
 
-	Adaptive TLCS-  FDS TLCS
-(〖x_diff〗_vqs ) ̅	-206.38
-〖σ_diff〗_vqs	69.03
+|	|Adaptive TLCS - FDS TLCS |
+|-------|-----------------------|
+| x_diff‾<sub>vqs</sub> ̅| -206.38|
+|σ_diff‾<sub>vqs</sub> | 	69.03 |
 
 t_score for the simulation sample captured above = -29.8
 P_value < 0.00001
-P-value is defined as the probability of observing (〖x_diff〗_vds ) ̅<= -206.38 for samples of 100 traffic simulations given H_o is true. More formally:
-P_value = P (〖(x_diff〗_vds ) ̅≤206.38| H_o=True )  
-Since the calculated p_value << significance (0.05), we safely rejected H_o 
+P-value is defined as the probability of observing x_diff‾<sub>vqs</sub> ̅<= -206.38 for samples of 100 traffic simulations given H<sub>o</sub> is true. More formally:  
+P_value = P (x_diff‾<sub>vqs</sub> ) ̅≤--206.38 | H<sub>o</sub>=True )    
+Since the calculated p_value << significance (0.05), we safely rejected H<sub>o</sub> 
+
 ## 7. Conclusion
 We could prove that the proposed approach of building an adaptive TLCS using Deep Reinforcement Learning was not only viable but also more effective than the FDS TLCS. We achieved a reduction of 8.5% in the average cumulative wait time of vehicles at the intersection using adaptive TLCS as compared FSD TLCS and a reduction of about 18.5% in the average cumulative vehicle queue length at the traffic intersection. 
  
