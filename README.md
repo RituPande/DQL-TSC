@@ -190,16 +190,17 @@ TLAgent: This class encapsulates the implementation of an adaptive TLCS agent th
  
 - A cyclic replay buffer of size 50000 is created which saves  experiences of the agent with the environment:  Each experience is constituted of a tuple [S<sub>t</sub>, A<sub>t</sub>, R<sub>t+1</sub>, S<sub>t+1</sub>, done ] where done is true if training episode is complete else it is set to False.  
 
-- At very time step a batch of 100 random experience tuple are chosen and prepared for training. This approach of learning from cached experiences is called experience replay. The replay logic is implemented as follows:  
-  a. Q-values for all actions corresponding to state St  for all samples in the batch are obtained by predicting them from the DNN model.  
-  b.  The Q-values corresponding to At for each sample in the batch is updated as per following rules:    
-  - If the episode has ended i.e. done = true, Q(S<sub>t</sub>,A<sub>t</sub>)=  R<sub>t+1</sub>  ELSE   
-  - Predict all Q-values corresponding to state S<sub>t+1</sub> and find the maximum amongst them  
-  - Update Q-value corresponding to At action for state St obtained in step a. as per equation.    
- <a/>      
-  c. The input for training consists of array of St in the sampled batch and the target for training are the Q-values updated in step b. above.
-
-- Also, using the same DNN for predicting Q-values to prepare training data and for updating via training can cause big oscillations during training. The situation is similar to chasing a moving target. Therefore, to mitigate this issue our DQN algorithm maintains an additional Target DNN and is used to predict Q-values corresponding to S<sub>t+1</sub> . The weights of this network are held constant for 10 episodes after which the weights are copied from the trained DNN to the target DNN.  
+- At very time step a batch of 100 random experience tuple are chosen and prepared for training. This approach of learning from cached experiences is called experience replay.    The replay logic is implemented as follows:  
+  - Q-values for all actions corresponding to state St  for all samples in the batch are obtained by predicting them from the DNN model.  
+  - The Q-values corresponding to At for each sample in the batch is updated as per following rules:    
+    - If the episode has ended i.e. done = true, Q(S<sub>t</sub>,A<sub>t</sub>)=  R<sub>t+1</sub>  ELSE   
+    - Predict all Q-values corresponding to state S<sub>t+1</sub> and find the maximum amongst them  
+    - Update Q-value corresponding to A<sub>t</sub> action for state S<sub>t</sub> as using the formula:    
+      Q'(S<sub>t</sub>,A<sub>t</sub>) = R<sub>t+1</sub>+γ max <sub>a ϵ A<sub>t+1</sub></sub> Q(S<sub>t+1</sub>,a )
+   <!-- end of the list -->   
+  - The input for training consists of array of St in the sampled batch and the target for training are the Q-values updated as shown above.
+<!-- end of the list -->
+- Also, using the same DNN for predicting Q-values to prepare training data and for modifying weights during training can cause big oscillations in training. The situation is similar to chasing a moving target. Therefore, to mitigate this issue our DQN algorithm maintains an additional Target DNN and is used to predict Q-values corresponding to S<sub>t+1</sub> . The weights of this network are held constant for 10 episodes after which the weights are copied from the trained DNN to the target DNN.  
 <a/>   
 
 ## 6. Results
