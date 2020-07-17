@@ -15,7 +15,7 @@ The rest of the paper is organized as follows:
 ## 2. Deep Q-learning  
 Deep Q-learning is a reinforcement learning algorithm which uses a Deep Neural Network (DNN) with Q-learning. In this section we provide basics of reinforcement learning, Q-learning and Deep Q-learning algorithms.
 Reinforcement learning algorithms are a class of machine learning algorithms where an agent learns how to behave in an environment by performing actions and receiving rewards corresponding to their actions. The goal of the agent is to maximize the expected future rewards. The set of all possible states of the environment is called state-space and the set of all actions an agent can perform on the environment is called action-space. The state of the environment, the action taken and the reward received at any time t are denoted by S<sub>t</sub> , A<sub>t</sub> and R<sub>t</sub> respectively.
-The Q-Learning algorithm works by learning the maximum expected future reward on taking any action in any given environment state, called Q-value. Q-value for a state-action pair at time-step t, Q(S<sub>t</sub>,A<sub>t</sub>)  is defined as the expected future reward on taking action A_t in state S_t at time-step t.  
+The Q-Learning algorithm works by learning the maximum expected future reward on taking any action in any given environment state, called Q-value. Q-value for a state-action pair at time-step t, Q(S<sub>t</sub>,A<sub>t</sub>)  is defined as the expected future reward on taking action A<sub>t</sub> in state S<sub>t</sub> at time-step t.  
 
 Q(S<sub>t</sub>,A<sub>t</sub>)=E[R<sub>t+1</sub>+γR<sub>t+2</sub>+ γ<sup>2</sup> R<sub>t+3</sub>+ γ<sup>3</sup> R<sub>t+4</sub>+⋯] | (S<sub>t</sub>,A<sub>t</sub>)  
 where  γ is the discount factor, such that, 0<γ≤1 . It ensures greater significance to immediate rewards as opposed to those far off in the future.
@@ -195,8 +195,8 @@ TLAgent: This class encapsulates the implementation of an adaptive TLCS agent th
   b.  The Q-values corresponding to At for each sample in the batch is updated as per following rules:    
   - If the episode has ended i.e. done = true, Q(S<sub>t</sub>,A<sub>t</sub>)=  R<sub>t+1</sub>  ELSE   
   - Predict all Q-values corresponding to state S<sub>t+1</sub> and find the maximum amongst them  
-  - Update Q-value corresponding to At action for state St obtained in step a. as per equation.  
-  <a/>  
+  - Update Q-value corresponding to At action for state St obtained in step a. as per equation.    
+  <a/>    
   c. The input for training consists of array of St in the sampled batch and the target for training are the Q-values updated in step b. above.
 
 - Also, using the same DNN for predicting Q-values to prepare training data and for updating via training can cause big oscillations during training. The situation is similar to chasing a moving target. Therefore, to mitigate this issue our DQN algorithm maintains an additional Target DNN and is used to predict Q-values corresponding to S<sub>t+1</sub> . The weights of this network are held constant for 10 episodes after which the weights are copied from the trained DNN to the target DNN.  
