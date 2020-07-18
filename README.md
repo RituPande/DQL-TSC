@@ -52,15 +52,15 @@ DQN (Deep Q-Learning Network) architecture is illustrated in the diagram below:
  
 The true Q-value function Q(S,A) is approximated with a function  Q ̂(S,A,w) as follows:  
 The value of parameter vector w for the DNN is calculated such that the least mean square error between the two functions is minimum. The loss function for the DNN is defined as:  
-J=1/2 [ Q(S,A)- Q^(S,A,w )]<sup>2</sup>
+J=1/2 [ Q(S,A)- Q<sup>^</sup>(S,A,w )]<sup>2</sup>
   
 To minimize the above function, we calculate the gradient of the function w.r.t. parameter vector w:  
-∇J=[ Q(S,A)-Q^(S,A,w )].∇Q^(S,A,w ))  
+∇J=[ Q(S,A)-Q<sup>^</sup>(S,A,w )].∇Q<sup>^</sup>(S,A,w ))  
   
 The gradient points to the direction of increase of J. Vector w is updated in the direction opposite to ∇J as per equation below
 w<sub>t+1</sub>=w<sub>t</sub>-α ∇J    
   
-w<sub>t+1</sub>=w<sub>t</sub>-α [Q(S<sub>t</sub>,A<sub>t</sub>) - Q(S<sub>t</sub>,A<sub>t</sub>,w<sub>t</sub> )]∇Q ̂(S<sub>t</sub>,A<sub>t</sub>,w<sub>t</sub> ))    
+w<sub>t+1</sub>=w<sub>t</sub>-α [Q(S<sub>t</sub>,A<sub>t</sub>) - Q<sup>^</sup>(S<sub>t</sub>,A<sub>t</sub>,w<sub>t</sub> )]∇Q<sup>^</sup>(S<sub>t</sub>,A<sub>t</sub>,w<sub>t</sub> ))    
 
 As we do not know the true Q-value Q(S<sub>t</sub>,A<sub>t</sub>), we use a sample predicted from the current DNN.   
 Q(S<sub>t</sub>,A<sub>t</sub>) = R<sub>t+1</sub>+γ max <sub>a ϵ A<sub>t+1</sub></sub> Q(S<sub>t+1</sub>,a )  
