@@ -178,15 +178,15 @@ Both the network-file and the route-file were configured in a sumocfg file which
 ## 5. Implementation Details
 The implementation for training an Adaptive TLCS for this paper includes three classes:  
 
-Model: The Model class implements the DNN to approximate the Q-value function. The model is implemented using the Keras v-2.2.4 with Tensorflow v-1.12.0 backend.  
-SumoEnv: This class encapsulates the simulation of traffic intersection as described in the previous sections. The class uses TRACI (Traffic Control Interface) to retrieve statistics corresponding  to simulated objects and to manipulate their behavior during training. It provides interfaces that can be used by the agent to :
+**Model:** The Model class implements the DNN to approximate the Q-value function. The model is implemented using the Keras v-2.2.4 with Tensorflow v-1.12.0 backend.  
+**SumoEnv:** This class encapsulates the simulation of traffic intersection as described in the previous sections. The class uses TRACI (Traffic Control Interface) to retrieve statistics corresponding  to simulated objects and to manipulate their behavior during training. It provides interfaces that can be used by the agent to :
 - Start environment simulation
 - Reset environment simulation
 - Perform action on the environment and receive rewards for it
 - Query existing environment state
 - Query statistics, such as, cumulative wait time of all vehicles in a simulation and cumulative intersection queue size at any given time in a training episode.
 
-TLAgent: This class encapsulates the implementation of an adaptive TLCS agent that trains an instance of Model class to approximate Q-value function by interacting with the SumoEnv class. This class implements the DQN algorithm, selecting the actions to be taken on the environment. It also implements a fixed-duration and sequence traffic signal control system (henceforth referred to as FDS TLCS in this paper) agent enabling comparison of performance between adaptive and fixed time-sequence traffic signal control strategies. Following are key implementation details of DQN algorithm implemented in the class
+**TLAgent:** This class encapsulates the implementation of an adaptive TLCS agent that trains an instance of Model class to approximate Q-value function by interacting with the SumoEnv class. This class implements the DQN algorithm, selecting the actions to be taken on the environment. It also implements a fixed-duration and sequence traffic signal control system (henceforth referred to as FDS TLCS in this paper) agent enabling comparison of performance between adaptive and fixed time-sequence traffic signal control strategies. Following are key implementation details of DQN algorithm implemented in the class
  
 - A cyclic replay buffer of size 50000 is created which saves  experiences of the agent with the environment:  Each experience is constituted of a tuple [S<sub>t</sub>, A<sub>t</sub>, R<sub>t+1</sub>, S<sub>t+1</sub>, done ] where done is true if training episode is complete else it is set to False.  
 
