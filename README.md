@@ -65,7 +65,7 @@ w<sub>t+1</sub>=w<sub>t</sub>-α [Q(S<sub>t</sub>,A<sub>t</sub>) - Q<sup>^</sup>
 As we do not know the true Q-value Q(S<sub>t</sub>,A<sub>t</sub>), we use a sample predicted from the current DNN.   
 Q(S<sub>t</sub>,A<sub>t</sub>) = R<sub>t+1</sub>+γ max <sub>a ϵ A<sub>t+1</sub></sub> Q(S<sub>t+1</sub>,a )  
 
-w<sub>t+1</sub>=w<sub>t</sub>-α [R<sub>t+1</sub>+γ max <sub>a ϵ A<sub>t+1</sub></sub> Q(S<sub>t+1</sub>,a )) -Q(S<sub>t</sub>,A<sub>t</sub>,w<sub>t</sub>)]∇Q^(S<sub>t</sub>,A<sub>t</sub>,w ))  
+w<sub>t+1</sub>=w<sub>t</sub>-α [R<sub>t+1</sub>+γ max <sub>a ϵ A<sub>t+1</sub></sub> Q(S<sub>t+1</sub>,a )) -Q^(S<sub>t</sub>,A<sub>t</sub>,w<sub>t</sub>)]∇Q^(S<sub>t</sub>,A<sub>t</sub>,w ))  
 
 This is called semi-gradient TD-update [5].  
   
